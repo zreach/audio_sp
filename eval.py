@@ -6,7 +6,7 @@ from mir_eval.separation import bss_eval_sources
 import numpy as np
 import torch
 
-from data import AudioDataLoader, AudioDataset
+from data import AudioDataloader, AudioDataset
 from criterion import cal_loss
 from net import TasNet
 
@@ -40,7 +40,7 @@ def evaluate(args):
     # Load data
     dataset = AudioDataset(args.data_dir, args.batch_size,
                            sample_rate=args.sample_rate, L=model.L)
-    data_loader = AudioDataLoader(dataset, batch_size=1, num_workers=2)
+    data_loader = AudioDataloader(dataset, batch_size=1, num_workers=2)
 
     with torch.no_grad():
         for i, (data) in enumerate(data_loader):

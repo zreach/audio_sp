@@ -24,7 +24,7 @@ def normalize_audio(sample_data, dbfs=3.0103):
 
 def overlap_and_add(signal, frame_step):
     """Reconstructs a signal from a framed representation.
-    
+
     Adds potentially overlapping frames of a signal with shape
     `[..., frames, frame_length]`, offsetting subsequent frames by `frame_step`.
     The resulting tensor has shape `[..., output_size]` where
@@ -42,7 +42,7 @@ def overlap_and_add(signal, frame_step):
     """
     outer_dimensions = signal.size()[:-2]
     frames, frame_length = signal.size()[-2:]
-
+    
     subframe_length = math.gcd(frame_length, frame_step)  # gcd=Greatest Common Divisor
     subframe_step = frame_step // subframe_length
     subframes_per_frame = frame_length // subframe_length

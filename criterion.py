@@ -11,7 +11,7 @@ def cal_loss(source, estimate_source, source_lengths,PIT=False):
         source_lengths: [B]
     """
     if PIT:
-        max_snr, perms, max_snr_idx = cal_si_snr_with_pit(source,
+        max_snr, perms, max_snr_idx = cal_snr_with_pit(source,
                                                         estimate_source,
                                                         source_lengths)
         loss = 0 - torch.mean(max_snr)

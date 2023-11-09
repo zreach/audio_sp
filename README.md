@@ -32,12 +32,12 @@ pip install -r requirements.txt
 
 ## Getting Started
 
-对于两个说话人集合，我们先将其放在`data_prepare/data_raw`文件下,`A`,`B`表示两个说话人集合：
+对于两个说话人集合，我们先将其放在`./data_raw`文件下,`TRAIN`,`DEV`,'TEST'表示训练、验证、测试集的说话人集合：
 
 ```
 data_raw
 │
-└───A
+└───TRAIN
 │   │
 │   └───speaker_1
 │  	│   │   1.flac
@@ -46,38 +46,12 @@ data_raw
 │   └───speaker_2
 │ 	│ ....
 │ 
-└───B
+└───DEV
 		│...
 		│...
 ```
 
-可以直接执行`bash data_prepare/bash.sh`来进行音频合成和数据集分割，生成的结果在`result/audio`中。tr,cv,tt分别表示训练、验证、测试集。
-
-### Prerequisites
-
-```
-python == 3.9.0
-```
-
-以下为所使用的第三方库：
-
-```
-librosa==0.10.1
-mir_eval==0.7
-numpy==1.25.0
-scipy==1.11.3
-soundfile==0.12.1
-torch==2.1.0
-tqdm==4.66.1i
-```
-
-### Installing
-
- 可以通过如下命令来配置环境：
-
-```
-pip install -r requirements.txt
-```
+可以直接执行`bash run.sh`(通过create_menu.py)，生成的结果在`data_index`中。tr,cv,tt分别表示训练、验证、测试集。
 
 ## Running the tests
 

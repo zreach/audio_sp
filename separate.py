@@ -38,8 +38,8 @@ def inference(model,data,args):
         mixture = mixture.cuda()
     with torch.no_grad():
         estimate_source = model(mixture, mix_lengths)
-        flat_estimate = remove_pad_and_flat(estimate_source, mix_lengths)
-        mixture = remove_pad_and_flat(mixture, mix_lengths)
+        flat_estimate = remove_pad(estimate_source, mix_lengths)
+        mixture = remove_pad(mixture, mix_lengths)
         # Write result
         def write(inputs, filename, sr=args.sample_rate):
             sf.write(filename, inputs, sr)# norm=True)
@@ -83,7 +83,7 @@ def separate(args):
         if (i + 1) % max_threads == 0:
             thread.join()
 
-def remove_pad_and_flat(inputs, inputs_lengths):
+def remove_pad(inputs, inputs_lengths):
     """
     Args:
         inputs: torch.Tensor, [B, C, T] or [B, T]
@@ -93,12 +93,12 @@ def remove_pad_and_flat(inputs, inputs_lengths):
     """
     results = []
     dim = inputs.dim()
-    if dim == 4:
+    if dim == 3:
         C = inputs.size(1)
     for input, length in zip(inputs, inputs_lengths):
-        if dim == 4: # [B, C, K, L]
+        if dim == 3: # [B, C, T]
             results.append(input[:,:length].view(C, -1).cpu().numpy())
-        elif dim == 3:  # [B, K, L]
+        elif dim == 2:  # [B, T]
             results.append(input[:length].view(-1).cpu().numpy())
     return results
 
