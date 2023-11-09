@@ -86,36 +86,24 @@ def run(args):
         
     input_dir =args.input_dir
     output_dir = args.output_dir
-    state = args.state
     nums_file = args.nums_files
-    CreateFiles(input_dir, output_dir, nums_file, state)
+
+    CreateFiles(input_dir, output_dir, nums_file)
     logging.info("Done create initial data pair")
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Command to make separation dataset'
-    )
-    parser.add_argument(
-        "--input_dir",
-        type=str,
-        help="Path to input data directory"
-    )
-
-    parser.add_argument(
-        "--output_dir",
-        type=str,
-        help='Path ot output data directory'
-    )
-    parser.add_argument(
-        "--nums_files",
-        type=int,
-        help='Path ot output data directory'
-    )
-    parser.add_argument(
-        "--state",
-        type=str,
-        help='Whether create train or test data directory'
-    )
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(" Data preprocessing")
+    parser.add_argument('--input_dir', type=str, default=None,
+                        help='Directory path of wsj0 including tr, cv and tt')
+    parser.add_argument('--output_dir', type=str, default=None,
+                        help='Directory path to put output files')
+    parser.add_argument('--sample_rate', type=int, default=8000,
+                        help='Sample rate of audio file')
+    parser.add_argument('--nums_files', type=int, default=1000,
+                        help='Nums of audio file')
+    # parser.add_argument('--test', type=int, default=0,
+    #                     help='Test or not')
     args = parser.parse_args()
+    print(args)
     run(args)
