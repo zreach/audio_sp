@@ -7,7 +7,7 @@ import librosa
 import torch
 import threading
 
-from data import EvalDataLoader, EvalDataset
+from data import AudioDataloader, AudioDataset
 from net import TasNet
 from concurrent.futures import ThreadPoolExecutor,as_completed,wait,ALL_COMPLETED
 
@@ -65,10 +65,10 @@ def separate(args):
         model.cuda()
 
     # Load data
-    eval_dataset = EvalDataset(args.mix_dir, args.mix_json,
+    eval_dataset = AudioDataset(args.mix_dir, args.mix_json,
                                batch_size=args.batch_size,
                                sample_rate=args.sample_rate, L=model.L)
-    eval_loader =  EvalDataLoader(eval_dataset, batch_size=1,num_workers=args.process_num)
+    eval_loader =  AudioDataloader(eval_dataset, batch_size=1,num_workers=args.process_num)
     os.makedirs(args.out_dir, exist_ok=True)
 
     threads = []
@@ -86,7 +86,7 @@ def separate(args):
 def remove_pad_and_flat(inputs, inputs_lengths):
     """
     Args:
-        inputs: torch.Tensor, [B, C, K, L] or [B, K, L]
+        inputs: torch.Tensor, [B, C, T] or [B, T]
         inputs_lengths: torch.Tensor, [B]
     Returns:
         results: a list containing B items, each item is [C, T], T varies

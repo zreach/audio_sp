@@ -36,8 +36,8 @@ def load_mixtures_and_sources(batch,sample_rate=8000,L=16):
         pad_s1 = cut_n_pad(s1,pad_len)
         pad_s2 = cut_n_pad(s2,pad_len)
 
-        pad_s1,lev1 = normalize_audio(pad_s1,sample_rate)
-        pad_s2,lev1 = normalize_audio(pad_s2,sample_rate)
+        pad_s1 = normalize_audio(pad_s1,sample_rate)
+        pad_s2 = normalize_audio(pad_s2,sample_rate)
         sir = random.uniform(0,2.5)
         weight = 10 * ((sir) / 20)
         pad_s1 = weight * pad_s1
@@ -118,6 +118,10 @@ def _collate_fn(batch,sample_rate=8000,L=16):
     sources_pad = sources_pad.permute((0,2,1)).contiguous()
     return mixtures_pad, ilens, sources_pad
 
+class AudioDataloader(DataLoader):
+    def __init__(self):
+        super(AudioDataloader,self).__init__()
+        self.collate_fn = _collate_fn
 def pad_list(xs, pad_value):
     n_batch = len(xs)
     max_len = max(x.size(-1) for x in xs)

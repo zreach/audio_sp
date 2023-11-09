@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
+from utils import *
 
 class TasNet(nn.Module):
     def __init__(self, L, N, hidden_size, num_layers,EPS=1e-8,
@@ -16,9 +17,9 @@ class TasNet(nn.Module):
         self.decoder = Decoder(N, L)
         self.fc = fc
     def forward(self,mixture,mixture_lengths):
-        mixture_e,norm_coef = self.encoder(mixture)
+        mixture_e = self.encoder(mixture)
         pred_mask = self.separator(mixture_e,mixture_lengths)
-        pred_source = self.decoder(mixture_e,pred_mask,norm_coef)
+        pred_source = self.decoder(mixture_e,pred_mask)
 
         return pred_source 
     @classmethod
@@ -76,6 +77,7 @@ class Encoder(nn.Module):
         signals = self.conv1d(mixture)
         signals = F.relu(mixture)
         return signals
+    
 class Separator(nn.Module):
     def __init__(self, N, hidden_size, num_layers, bidirectional=True, nspk=2):
         super(Separator, self).__init__()
@@ -92,7 +94,7 @@ class Separator(nn.Module):
                            bidirectional=bool(bidirectional))
         
         self.fc = nn.Linear(hidden_size * 2 if bidirectional else hidden_size, nspk * N)
-        
+
     def forward(self,mixture_e,mixture_lengths):
         """
         Args:
@@ -124,7 +126,7 @@ class Decoder(nn.Module):
         self.N, self.L = N, L
 
         self.basis_signals = nn.Linear(N,L,bias=False)
-    def forward(self,mixture_e,est_mask,norm_coef):
+    def forward(self,mixture_e,est_mask):
         """
         Args:
             mixture_e: [B, K, N]
@@ -133,9 +135,11 @@ class Decoder(nn.Module):
         Returns:
             est_source: [B, nspk, K, L]
         """
+
         source_e = torch.unsqueeze(mixture_e, 2) * est_mask  # B x K x nspk x N
         est_source = self.basis_signals(source_e)
-        norm_coef = torch.unsqueeze(norm_coef, 2) #恢复原始大小
-        est_source = est_source * norm_coef
+
         est_source = est_source.permute((0, 2, 1, 3)).contiguous() # B x nspk x K x L
+        est_source = overlap_and_add(est_source, self.L//2)
+
         return est_source

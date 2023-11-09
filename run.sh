@@ -50,7 +50,6 @@ if [ $stage -le 1 ]; then
   echo "Stage 1: Generating json files including wav path"
   [ ! -d $dumpdir ] && mkdir $dumpdir
   python create_menu.py --input_dir $data --output_dir $dumpdir --sample_rate $sample_rate --nums_files $nums_files
-  # python preprocess.py --in-dir $data --out-dir $dumpdir --sample-rate $sample_rate
 
 fi
 

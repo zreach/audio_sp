@@ -4,12 +4,12 @@ import argparse
 
 import torch
 import random
-from data import AudioDataset
+from data import AudioDataset,AudioDataloader
 from solver import Solver
 from net import TasNet
 import os
 import numpy as np
-from torch.utils.data import DataLoader
+# from torch.utils.data import DataLoader
 
 os.environ['CUDA_VISIBLE_DEVICE']='2'
 
@@ -101,12 +101,12 @@ def main(args):
                               sample_rate=args.sample_rate, L=args.L)
     sample_num = int(args.percent * len(tr_dataset))
     print(sample_num)
-    tr_loader = DataLoader(tr_dataset[:sample_num], batch_size=args.batch_size,
+    tr_loader = AudioDataloader(tr_dataset[:sample_num], batch_size=args.batch_size,
                                 shuffle=args.shuffle,
                                 num_workers=args.num_workers)
-    cv_loader = AudioDataLoader(cv_dataset[:sample_num], batch_size=args.batch_size,
+    cv_loader = AudioDataloader(cv_dataset[:sample_num], batch_size=args.batch_size,
                                 shuffle=args.shuffle,
-                                num_workers=0)
+                                num_workers=args.num_workers)
     data = {'tr_loader': tr_loader, 'cv_loader': cv_loader}
     # model
     model = TasNet(args.L, args.N, args.hidden_size, args.num_layers,
@@ -121,6 +121,7 @@ def main(args):
                                      lr=args.lr,
                                      momentum=args.momentum,
                                      weight_decay=args.l2)
+        
     elif args.optimizer == 'adam':
         optimizier = torch.optim.Adam(model.parameters(),
                                       lr=args.lr,

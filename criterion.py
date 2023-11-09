@@ -3,12 +3,11 @@ import torch
 
 EPS = 1e-8
 
-
 def cal_loss(source, estimate_source, source_lengths,PIT=False):
     """
     Args:
-        source: [B, C, K, L]
-        estimate_source: [B, C, K, L]
+        source: [B, C, T]
+        estimate_source: [B, C, T]
         source_lengths: [B]
     """
     if PIT:
@@ -21,6 +20,8 @@ def cal_loss(source, estimate_source, source_lengths,PIT=False):
     else:
         si_snr = cal_si_snr(source,estimate_source, source_lengths)
         loss = 0 - torch.mean(si_snr)
+
+
 def cal_si_snr(source, estimate_source, source_lengths):
     assert source.size() == estimate_source.size()
     B, C, K, L = source.size()
